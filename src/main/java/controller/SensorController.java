@@ -1,28 +1,30 @@
-package com.fiap.mecatronica.monitoramento.service;
+package com.fiap.mecatronica.monitoramento.controller;
 import com.fiap.mecatronica.monitoramento.model.Sensor;
-import com.fiap.mecatronica.monitoramento.repository.SensorRepository;
-import org.springframework.stereotype.Service;
+import com.fiap.mecatronica.monitoramento.service.SensorService;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
-@Service
-public class SensorService {
-    private final SensorRepository repository;
-    public SensorService(SensorRepository repository) {
-        this.repository = repository;
+@RestController
+@RequestMapping("/sensores")
+@CrossOrigin
+public class SensorController {
+    private final SensorService service;
+    public SensorController(SensorService service) {
+        this.service = service;
     }
-    public Sensor salvar(Sensor sensor) {
-        if (sensor.getLimiteMinimo() >= sensor.getLimiteMaximo()) {
-            throw new RuntimeException("Limite mínimo não pode ser maior ou igual ao limite máximo.");
-        }
-        return repository.save(sensor);
+    @PostMapping
+    public Sensor criar(@RequestBody Sensor sensor) {
+        return service.salvar(sensor);
     }
-    public List<Sensor> listarTodos() {
-        return repository.findAll();
+    @GetMapping
+    public List<Sensor> listar() {
+        return service.listarTodos();
     }
-    public Sensor buscarPorId(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sensor não encontrado"));
+    @GetMapping("/{id}")
+    public Sensor buscar(@PathVariable Long id) {
+        return service.buscarPorId(id);
     }
-    public void deletar(Long id) {
-        repository.deleteById(id);
+    @DeleteMapping("/{id}")
+    public void deletar(@PathVariable Long id) {
+        service.deletar(id);
     }
 }
